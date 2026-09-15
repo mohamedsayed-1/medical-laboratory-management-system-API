@@ -1,4 +1,7 @@
 
+using Medical_Laboratory_Management_System.Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace Medical_Laboratory_Management_System
 {
     public class Program
@@ -12,6 +15,11 @@ namespace Medical_Laboratory_Management_System
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddDbContext<MLMSDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("cs"));
+            });
 
             var app = builder.Build();
 
