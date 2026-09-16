@@ -13,13 +13,16 @@ namespace Medical_Laboratory_Management_System.Models
         public int PatientId { get; set; }
         public Patient Patient { get; set; } = null!;
         public ICollection<RequestedLabTest> RequestedLabTests { get; set; } = [];
-        public static Appointment Create(Patient patient, ICollection<RequestedLabTest> requestedLabTests)
+        public static Appointment Create(DateTime date, 
+            string? notes, bool urgent, Patient patient)
         {
             return new Appointment()
             {
                 Status = AppointmentStatus.Scheduled,
+                Date = date,
+                Notes = notes,
+                Urgent = urgent,
                 Patient = patient,
-                RequestedLabTests = requestedLabTests
             };
         }
         public void Cancel()

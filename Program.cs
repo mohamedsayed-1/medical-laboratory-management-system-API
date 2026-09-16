@@ -1,5 +1,6 @@
 
 using Medical_Laboratory_Management_System.Data;
+using Medical_Laboratory_Management_System.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Medical_Laboratory_Management_System
@@ -20,6 +21,10 @@ namespace Medical_Laboratory_Management_System
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("cs"));
             });
+
+            builder.Services.AddScoped<IAppointmentServices, AppointmentServices>();
+            builder.Services.AddScoped<IPatientServices, PatientServices>();
+            builder.Services.AddScoped<ILabTestServices, LabTestServices>();
 
             var app = builder.Build();
 
