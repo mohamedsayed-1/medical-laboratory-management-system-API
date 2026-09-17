@@ -113,5 +113,37 @@ namespace Medical_Laboratory_Management_System.Services
         {
             context.SaveChanges();
         }
+
+        public List<AppointmentDetailsDTO> GetAllWithIncludesFilterByStatus(int pageNum, int pageSize, string status)
+        {
+            var appointments = context.Appointments
+                .Where(x => status == "Deleted" ? x.IsDeleted 
+                    : (x.Status.ToString() == status && !x.IsDeleted))
+                .Select(x => new AppointmentDetailsDTO()
+                {
+                    Date = x.Date,
+                    Notes = x.Notes,
+                    Urgent = x.Urgent,
+                    Status = x.Status,
+                    AppointmentId = x.Id,
+                    PatientName = x.Patient.Name,
+                    PatientDateOfBirth = x.Patient.DateOfBirth,
+                    PatientEmail = x.Patient.Email,
+                    PatientGender = x.Patient.Gender,
+                    PatientMaritalStatus = x.Patient.MaritalStatus,
+                    PatientPhoneNumber = x.Patient.PhoneNumber,
+                    RequestedLabTests = x.RequestedLabTests.Select(y => new RequestedLabTestDetailsDTO()
+                    {
+                        RequestedLabTestId = y.Id,
+                        RequestedLabTestStatus = y.Status,
+                        LabTestResultNotes = y.LabTestResult != null ? y.LabTestResult.Notes : null,
+                        LabTestResultValue = y.LabTestResult != null ? y.LabTestResult.Value : null,
+                        LabTestName = y.LabTest.Name,
+                        LabTestPrice = y.LabTest.Price
+                    }).ToList()
+                }).IgnoreQueryFilters()
+                .Skip((pageNum - 1) * pageSize).Take(pageSize).ToList();
+            return appointments;
+        }
     }
 }
