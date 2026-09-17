@@ -17,9 +17,19 @@ namespace Medical_Laboratory_Management_System.Controllers
         [HttpPost]
         public IActionResult Add(AddAppointmentDTO appointmentDTO)
         {
-            if (!appointmentServices.Add(appointmentDTO))
+            var appointment = appointmentServices.Add(appointmentDTO);
+            if(appointment is null)
                 return BadRequest();
-            return Created();
+            return CreatedAtAction(nameof(GetById), new { id = appointment.Id }, appointmentServices.GetByIdWithIncludes(appointment.Id));
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult GetById(int id)
+        {
+            var appointment = appointmentServices.GetByIdWithIncludes(id);
+            if(appointment is null)
+                return NotFound();
+            return Ok(appointment);
         }
     }
 }

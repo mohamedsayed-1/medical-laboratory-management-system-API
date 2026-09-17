@@ -1,9 +1,11 @@
 ﻿using Medical_Laboratory_Management_System.DTOs;
+using Medical_Laboratory_Management_System.Models;
 
 namespace Medical_Laboratory_Management_System.Services
 {
     public interface IAppointmentServices
     {
-        public bool Add(AddAppointmentDTO appointmentDTO);
+        public Appointment? Add(AddAppointmentDTO appointmentDTO);
+        public AppointmentDetailsDTO? GetByIdWithIncludes(int id);
     }
 }
