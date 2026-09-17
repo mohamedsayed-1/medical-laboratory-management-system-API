@@ -1,4 +1,4 @@
-﻿using System.Drawing.Printing;
+﻿using System.Linq.Expressions;
 using Medical_Laboratory_Management_System.Data;
 using Medical_Laboratory_Management_System.DTOs;
 using Medical_Laboratory_Management_System.Models;
@@ -52,29 +52,8 @@ namespace Medical_Laboratory_Management_System.Services
         public AppointmentDetailsDTO? GetByIdWithIncludes(int id)
         {
             var appointment = context.Appointments
-                .Select(x => new AppointmentDetailsDTO()
-                {
-                    Date = x.Date,
-                    Notes = x.Notes,
-                    Urgent = x.Urgent,
-                    Status = x.Status,
-                    AppointmentId = x.Id,
-                    PatientName = x.Patient.Name,
-                    PatientDateOfBirth = x.Patient.DateOfBirth,
-                    PatientEmail = x.Patient.Email,
-                    PatientGender = x.Patient.Gender,
-                    PatientMaritalStatus = x.Patient.MaritalStatus,
-                    PatientPhoneNumber = x.Patient.PhoneNumber,
-                    RequestedLabTests = x.RequestedLabTests.Select(y => new RequestedLabTestDetailsDTO()
-                    {
-                        RequestedLabTestId = y.Id,
-                        RequestedLabTestStatus = y.Status,
-                        LabTestResultNotes = y.LabTestResult != null ? y.LabTestResult.Notes : null,
-                        LabTestResultValue = y.LabTestResult != null ? y.LabTestResult.Value : null,
-                        LabTestName = y.LabTest.Name,
-                        LabTestPrice = y.LabTest.Price
-                    }).ToList()
-                }).FirstOrDefault(x => x.AppointmentId == id);
+                .Select(ToAppointmentDetailsDTO())
+                .FirstOrDefault(x => x.AppointmentId == id);
             if (appointment is null)
                 return null;
             return appointment;
@@ -83,29 +62,10 @@ namespace Medical_Laboratory_Management_System.Services
         public List<AppointmentDetailsDTO> GetAllWithIncludes(int pageNum, int pageSize)
         {
             var appointments = context.Appointments
-                .Select(x => new AppointmentDetailsDTO()
-                {
-                    Date = x.Date,
-                    Notes = x.Notes,
-                    Urgent = x.Urgent,
-                    Status = x.Status,
-                    AppointmentId = x.Id,
-                    PatientName = x.Patient.Name,
-                    PatientDateOfBirth = x.Patient.DateOfBirth,
-                    PatientEmail = x.Patient.Email,
-                    PatientGender = x.Patient.Gender,
-                    PatientMaritalStatus = x.Patient.MaritalStatus,
-                    PatientPhoneNumber = x.Patient.PhoneNumber,
-                    RequestedLabTests = x.RequestedLabTests.Select(y => new RequestedLabTestDetailsDTO()
-                    {
-                        RequestedLabTestId = y.Id,
-                        RequestedLabTestStatus = y.Status,
-                        LabTestResultNotes = y.LabTestResult != null ? y.LabTestResult.Notes : null,
-                        LabTestResultValue = y.LabTestResult != null ? y.LabTestResult.Value : null,
-                        LabTestName = y.LabTest.Name,
-                        LabTestPrice = y.LabTest.Price
-                    }).ToList()
-                }).Skip((pageNum - 1) * pageSize).Take(pageSize).ToList();
+                .Select(ToAppointmentDetailsDTO())
+                .Skip((pageNum - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
             return appointments;
         }
 
@@ -116,34 +76,50 @@ namespace Medical_Laboratory_Management_System.Services
 
         public List<AppointmentDetailsDTO> GetAllWithIncludesFilterByStatus(int pageNum, int pageSize, string status)
         {
-            var appointments = context.Appointments
-                .Where(x => status == "Deleted" ? x.IsDeleted 
-                    : (x.Status.ToString() == status && !x.IsDeleted))
-                .Select(x => new AppointmentDetailsDTO()
+            IQueryable<Appointment> appointments;
+
+            if (status.Equals("deleted", StringComparison.OrdinalIgnoreCase))
+            {
+                appointments = context.Appointments
+                .IgnoreQueryFilters()
+                .Where(x => x.IsDeleted);
+            }
+            else
+            {
+                appointments = context.Appointments
+                .Where(x => x.Status.ToString().ToUpper() == status.ToUpper());
+            }
+            var appointmentsDTO = appointments.Select(ToAppointmentDetailsDTO())
+            .Skip((pageNum - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+            return appointmentsDTO;
+        }
+        private Expression<Func<Appointment,AppointmentDetailsDTO>> ToAppointmentDetailsDTO()
+        {
+            return x => new AppointmentDetailsDTO()
+            {
+                Date = x.Date,
+                Notes = x.Notes,
+                Urgent = x.Urgent,
+                Status = x.Status,
+                AppointmentId = x.Id,
+                PatientName = x.Patient.Name,
+                PatientDateOfBirth = x.Patient.DateOfBirth,
+                PatientEmail = x.Patient.Email,
+                PatientGender = x.Patient.Gender,
+                PatientMaritalStatus = x.Patient.MaritalStatus,
+                PatientPhoneNumber = x.Patient.PhoneNumber,
+                RequestedLabTests = x.RequestedLabTests.Select(y => new RequestedLabTestDetailsDTO()
                 {
-                    Date = x.Date,
-                    Notes = x.Notes,
-                    Urgent = x.Urgent,
-                    Status = x.Status,
-                    AppointmentId = x.Id,
-                    PatientName = x.Patient.Name,
-                    PatientDateOfBirth = x.Patient.DateOfBirth,
-                    PatientEmail = x.Patient.Email,
-                    PatientGender = x.Patient.Gender,
-                    PatientMaritalStatus = x.Patient.MaritalStatus,
-                    PatientPhoneNumber = x.Patient.PhoneNumber,
-                    RequestedLabTests = x.RequestedLabTests.Select(y => new RequestedLabTestDetailsDTO()
-                    {
-                        RequestedLabTestId = y.Id,
-                        RequestedLabTestStatus = y.Status,
-                        LabTestResultNotes = y.LabTestResult != null ? y.LabTestResult.Notes : null,
-                        LabTestResultValue = y.LabTestResult != null ? y.LabTestResult.Value : null,
-                        LabTestName = y.LabTest.Name,
-                        LabTestPrice = y.LabTest.Price
-                    }).ToList()
-                }).IgnoreQueryFilters()
-                .Skip((pageNum - 1) * pageSize).Take(pageSize).ToList();
-            return appointments;
+                    RequestedLabTestId = y.Id,
+                    RequestedLabTestStatus = y.Status,
+                    LabTestResultNotes = y.LabTestResult != null ? y.LabTestResult.Notes : null,
+                    LabTestResultValue = y.LabTestResult != null ? y.LabTestResult.Value : null,
+                    LabTestName = y.LabTest.Name,
+                    LabTestPrice = y.LabTest.Price
+                }).ToList()
+            };
         }
     }
 }
