@@ -80,6 +80,35 @@ namespace Medical_Laboratory_Management_System.Services
             return appointment;
         }
 
+        public List<AppointmentDetailsDTO> GetAllWithIncludes(int pageNum, int pageSize)
+        {
+            var appointments = context.Appointments
+                .Select(x => new AppointmentDetailsDTO()
+                {
+                    Date = x.Date,
+                    Notes = x.Notes,
+                    Urgent = x.Urgent,
+                    Status = x.Status,
+                    AppointmentId = x.Id,
+                    PatientName = x.Patient.Name,
+                    PatientDateOfBirth = x.Patient.DateOfBirth,
+                    PatientEmail = x.Patient.Email,
+                    PatientGender = x.Patient.Gender,
+                    PatientMaritalStatus = x.Patient.MaritalStatus,
+                    PatientPhoneNumber = x.Patient.PhoneNumber,
+                    RequestedLabTests = x.RequestedLabTests.Select(y => new RequestedLabTestDetailsDTO()
+                    {
+                        RequestedLabTestId = y.Id,
+                        RequestedLabTestStatus = y.Status,
+                        LabTestResultNotes = y.LabTestResult != null ? y.LabTestResult.Notes : null,
+                        LabTestResultValue = y.LabTestResult != null ? y.LabTestResult.Value : null,
+                        LabTestName = y.LabTest.Name,
+                        LabTestPrice = y.LabTest.Price
+                    }).ToList()
+                }).Skip((pageNum - 1) * pageSize).Take(pageSize).ToList();
+            return appointments;
+        }
+
         public void Save()
         {
             context.SaveChanges();

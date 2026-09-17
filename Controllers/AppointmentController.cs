@@ -31,5 +31,14 @@ namespace Medical_Laboratory_Management_System.Controllers
                 return NotFound();
             return Ok(appointment);
         }
+
+        [HttpGet]
+        public IActionResult GetAll(int pageNum = 1, int pageSize = 10)
+        {
+            if (pageSize <= 0 || pageNum <= 0)
+                return BadRequest();
+            var appointments = appointmentServices.GetAllWithIncludes(pageNum, pageSize);
+            return Ok(appointments);
+        }
     }
 }

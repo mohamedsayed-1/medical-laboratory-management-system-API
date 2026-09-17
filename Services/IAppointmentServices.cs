@@ -7,5 +7,6 @@ namespace Medical_Laboratory_Management_System.Services
     {
         public Appointment? Add(AddAppointmentDTO appointmentDTO);
         public AppointmentDetailsDTO? GetByIdWithIncludes(int id);
+        public List<AppointmentDetailsDTO> GetAllWithIncludes(int pageNum, int pageSize);
     }
 }
