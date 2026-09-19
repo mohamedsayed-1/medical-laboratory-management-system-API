@@ -24,6 +24,14 @@ namespace Medical_Laboratory_Management_System.Services
             return requestedLabTests;
         }
 
+        public RequestedLabTestDetailsDTO? GetById(int id)
+        {
+            return context.RequestedLabTests
+                .Where(x => x.Id == id)
+                .Select(ToRequestedLabTestsDetailsDTO())
+                .FirstOrDefault();
+        }
+
         private Expression<Func<RequestedLabTest, RequestedLabTestDetailsDTO>> ToRequestedLabTestsDetailsDTO()
         {
             return x => new RequestedLabTestDetailsDTO()
