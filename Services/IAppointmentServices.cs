@@ -12,5 +12,6 @@ namespace Medical_Laboratory_Management_System.Services
         public List<AppointmentDetailsDTO>? GetAllByPhoneNumberWithIncludes(int pageNum, int pageSize, string? status, string phoneNumber);
         public int? Edit(int id, EditAppointmentDTO appointmentDTO);
         public int? Delete(int id);
+        public int? Cancel(int id);
     }
 }

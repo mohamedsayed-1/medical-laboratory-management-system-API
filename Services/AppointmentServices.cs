@@ -181,5 +181,22 @@ namespace Medical_Laboratory_Management_System.Services
             context.SaveChanges();
             return appointment.Id;
         }
+
+        public int? Cancel(int id)
+        {
+            var appointment = context.Appointments
+                .Where(x => x.Id == id).FirstOrDefault();
+            if (appointment == null)
+                return null;
+            if (appointment.Status != Models.Enums.AppointmentStatus.Scheduled)
+                throw new AppointmentNotCancellableException($"Appointment {id} cannot be cancelled because it's status is \"{appointment.Status}\"");
+            appointment.Cancel();
+            foreach (var requestedLabTest in appointment.RequestedLabTests)
+            {
+                requestedLabTest.Cancel();
+            }
+            context.SaveChanges();
+            return appointment.Id;
+        }
     }
 }

@@ -101,5 +101,21 @@ namespace Medical_Laboratory_Management_System.Controllers
                 return NotFound();
             return NoContent();
         }
+
+        [HttpPost("{id:int}/cancel")]
+        public IActionResult Cancel(int id)
+        {
+            try
+            {
+                var appointmentId = appointmentServices.Cancel(id);
+                if (appointmentId == null)
+                    return NotFound();
+                return Ok(appointmentServices.GetByIdWithIncludes(appointmentId.Value));
+            }
+            catch (AppointmentNotCancellableException ex)
+            {
+                return Conflict(ex.Message);
+            }
+        }
     }
 }
