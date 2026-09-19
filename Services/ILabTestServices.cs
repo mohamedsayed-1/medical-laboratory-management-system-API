@@ -8,5 +8,6 @@ namespace Medical_Laboratory_Management_System.Services
         public List<LabTest> GetAllWithIds(List<int> ids);
         public List<LabTestDetailsDTO> GetAll();
         public LabTestDetailsDTO? GetById(int id);
+        public int Add(LabTestDetailsDTO labTestDTO);
     }
 }

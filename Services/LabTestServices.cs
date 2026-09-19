@@ -14,6 +14,19 @@ namespace Medical_Laboratory_Management_System.Services
             this.context = context;
         }
 
+        public int Add(LabTestDetailsDTO labTestDTO)
+        {
+            var newLabTest = new LabTest()
+            {
+                Name = labTestDTO.Name,
+                Price = labTestDTO.Price,
+                IsDeleted = false
+            };
+            context.Add(newLabTest);
+            context.SaveChanges();
+            return newLabTest.Id;
+        }
+
         public List<LabTestDetailsDTO> GetAll()
         {
             var labTests = context.LabTests

@@ -1,4 +1,5 @@
-﻿using Medical_Laboratory_Management_System.Services;
+﻿using Medical_Laboratory_Management_System.DTOs;
+using Medical_Laboratory_Management_System.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Medical_Laboratory_Management_System.Controllers
@@ -33,6 +34,13 @@ namespace Medical_Laboratory_Management_System.Controllers
             if (labTest == null)
                 return NotFound();
             return Ok(labTest);
+        }
+
+        [HttpPost]
+        public IActionResult Add(LabTestDetailsDTO labTestDTO)
+        {
+            var labTestId = labTestServices.Add(labTestDTO);
+            return CreatedAtAction(nameof(GetById), new { id = labTestId }, labTestServices.GetById(labTestId));
         }
     }
 }
