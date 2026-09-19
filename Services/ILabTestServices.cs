@@ -10,5 +10,6 @@ namespace Medical_Laboratory_Management_System.Services
         public LabTestDetailsDTO? GetById(int id);
         public int Add(LabTestDetailsDTO labTestDTO);
         public int? Edit(int id, EditLabTestDTO labTestDTO);
+        public int? Delete(int id);
     }
 }
