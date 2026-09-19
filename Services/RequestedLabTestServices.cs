@@ -1,6 +1,7 @@
 ﻿using System.Linq.Expressions;
 using Medical_Laboratory_Management_System.Data;
 using Medical_Laboratory_Management_System.DTOs;
+using Medical_Laboratory_Management_System.Exceptions;
 using Medical_Laboratory_Management_System.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,6 +14,20 @@ namespace Medical_Laboratory_Management_System.Services
         public RequestedLabTestServices(MLMSDbContext context)
         {
             this.context = context;
+        }
+
+        public int? Cancel(int id)
+        {
+            var requestedLabTest = context.RequestedLabTests
+               .Where(x => x.Id == id).FirstOrDefault();
+            if (requestedLabTest == null)
+                return null;
+            if (requestedLabTest.Status != Models.Enums.RequestedLabTestStatus.Queued)
+                throw new RequestedLabTestNotCancellableException($"Requested Lab Test {id} cannot be cancelled because it's status is \"{requestedLabTest.Status}\"");
+            requestedLabTest.Cancel();
+            context.SaveChanges();
+            return requestedLabTest.Id;
+
         }
 
         public int? Delete(int id)

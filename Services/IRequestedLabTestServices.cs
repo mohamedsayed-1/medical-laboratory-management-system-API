@@ -8,5 +8,6 @@ namespace Medical_Laboratory_Management_System.Services
         public List<RequestedLabTestDetailsDTO>? GetAllByStatus(int pageNum, int pageSize, string status);
         public RequestedLabTestDetailsDTO? GetById(int id);
         public int? Delete(int id);
+        public int? Cancel(int id);
     }
 }

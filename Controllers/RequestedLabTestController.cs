@@ -1,4 +1,5 @@
-﻿using Medical_Laboratory_Management_System.Models;
+﻿using Medical_Laboratory_Management_System.Exceptions;
+using Medical_Laboratory_Management_System.Models;
 using Medical_Laboratory_Management_System.Models.Enums;
 using Medical_Laboratory_Management_System.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -59,6 +60,22 @@ namespace Medical_Laboratory_Management_System.Controllers
             if (requestedLabTestId == null)
                 return NotFound();
             return NoContent();
+        }
+
+        [HttpPost("{id:int}/cancel")]
+        public IActionResult Cancel(int id)
+        {
+            try
+            {
+                var requestedLabTestId = requestedLabTestServices.Cancel(id);
+                if (requestedLabTestId == null)
+                    return NotFound();
+                return Ok(requestedLabTestServices.GetById(requestedLabTestId.Value));
+            }
+            catch (RequestedLabTestNotCancellableException ex)
+            {
+                return Conflict(ex.Message);
+            }
         }
     }
 }
