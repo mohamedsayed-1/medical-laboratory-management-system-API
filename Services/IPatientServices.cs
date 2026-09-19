@@ -1,5 +1,6 @@
 ﻿using Medical_Laboratory_Management_System.DTOs;
 using Medical_Laboratory_Management_System.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Medical_Laboratory_Management_System.Services
 {
@@ -9,5 +10,6 @@ namespace Medical_Laboratory_Management_System.Services
         public List<PatientDetailsDTO> GetAll(int pageNum, int pageSize);
         public PatientDetailsDTO? GetById(int id);
         public PatientDetailsDTO? GetByPhoneNumber(string phoneNumber);
+        public int? Edit(int id, EditPatientDTO patientDTO);
     }
 }

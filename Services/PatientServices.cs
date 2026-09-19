@@ -13,6 +13,22 @@ namespace Medical_Laboratory_Management_System.Services
         {
             this.context = context;
         }
+
+        public int? Edit(int id, EditPatientDTO patientDTO)
+        {
+            var patient = context.Patients
+                .Where(x => x.Id == id)
+                .FirstOrDefault();
+            if (patient == null) 
+                return null;
+            patient.DateOfBirth = patientDTO.DateOfBirth ?? patient.DateOfBirth;
+            patient.Email = patientDTO.Email ?? patient.Email;
+            patient.MaritalStatus = patientDTO.MaritalStatus ?? patient.MaritalStatus;
+            patient.Gender = patientDTO.Gender ?? patient.Gender;
+            context.SaveChanges();
+            return patient.Id;
+        }
+
         public Patient? FindByPhoneNumber(string phoneNumber)
         {
             return context.Patients.Where(x => x.PhoneNumber == phoneNumber).SingleOrDefault(); // single not first as i want to make very sure that there's only one phone number

@@ -1,4 +1,5 @@
 ﻿using System.Drawing.Printing;
+using Medical_Laboratory_Management_System.DTOs;
 using Medical_Laboratory_Management_System.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,7 +32,7 @@ namespace Medical_Laboratory_Management_System.Controllers
         public IActionResult GetById(int id)
         {
             var patient = patientServices.GetById(id);
-            if(patient == null)
+            if (patient == null)
                 return NotFound();
             return Ok(patient);
         }
@@ -43,6 +44,15 @@ namespace Medical_Laboratory_Management_System.Controllers
             if (patient == null)
                 return NotFound();
             return Ok(patient);
+        }
+
+        [HttpPost("{id}")]
+        public IActionResult Edit(int id, EditPatientDTO patientDTO)
+        {
+            var patientId = patientServices.Edit(id, patientDTO);
+            if (patientId == null)
+                return NotFound();
+            return Ok(patientServices.GetById(patientId.Value));
         }
     }
 }
