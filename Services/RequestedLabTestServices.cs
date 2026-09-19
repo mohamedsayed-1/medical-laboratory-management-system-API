@@ -2,6 +2,7 @@
 using Medical_Laboratory_Management_System.Data;
 using Medical_Laboratory_Management_System.DTOs;
 using Medical_Laboratory_Management_System.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Medical_Laboratory_Management_System.Services
 {
@@ -22,6 +23,32 @@ namespace Medical_Laboratory_Management_System.Services
                 .Take(pageSize)
                 .ToList();
             return requestedLabTests;
+        }
+
+        public List<RequestedLabTestDetailsDTO>? GetAllByStatus(int pageNum, int pageSize, string status)
+        {
+            IQueryable<RequestedLabTest> requestedLabTests;
+            if (status == null)
+                return null;
+
+            if (status.Equals("deleted", StringComparison.OrdinalIgnoreCase))
+            {
+                requestedLabTests = context.RequestedLabTests
+                .IgnoreQueryFilters()
+                .Where(x => x.IsDeleted);
+            }
+            else
+            {
+                requestedLabTests = context.RequestedLabTests
+                .Where(x => x.Status.ToString().ToUpper() == status.ToUpper());
+            }
+            var requestedLabTestDTO = requestedLabTests
+                .Select(ToRequestedLabTestsDetailsDTO())
+                .OrderBy(x => x.RequestedLabTestId)
+                .Skip((pageNum - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+            return requestedLabTestDTO;
         }
 
         public RequestedLabTestDetailsDTO? GetById(int id)
