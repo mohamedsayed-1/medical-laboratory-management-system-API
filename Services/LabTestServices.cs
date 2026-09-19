@@ -50,10 +50,14 @@ namespace Medical_Laboratory_Management_System.Services
             return labTest.Id;
         }
 
-        public List<LabTestDetailsDTO> GetAll()
+        public List<LabTestDetailsDTO> GetAll(int pageNum, int pageSize)
         {
+
             var labTests = context.LabTests
                 .Select(ToLabTestDetailsDTO())
+                .OrderBy(x => x.Id)
+                .Skip((pageNum - 1) * pageSize)
+                .Take(pageSize)
                 .ToList();
             return labTests;
         }

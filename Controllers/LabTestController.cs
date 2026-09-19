@@ -24,7 +24,7 @@ namespace Medical_Laboratory_Management_System.Controllers
                 pageSize = 10;
                 pageNum = 1;
             }
-            var labTests = labTestServices.GetAll();
+            var labTests = labTestServices.GetAll(pageNum, pageSize);
             return Ok(labTests);
         }
 
