@@ -1,5 +1,5 @@
 ﻿using Medical_Laboratory_Management_System.DTOs;
-using Medical_Laboratory_Management_System.Models;
+using Medical_Laboratory_Management_System.Exceptions;
 using Medical_Laboratory_Management_System.Models.Enums;
 using Medical_Laboratory_Management_System.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -74,6 +74,22 @@ namespace Medical_Laboratory_Management_System.Controllers
                 return Ok(appointments);
             }
             return BadRequest();
+        }
+
+        [HttpPatch("{id:int}")]
+        public IActionResult Edit(int id, EditAppointmentDTO appointmentDTO)
+        {
+            try
+            {
+                var appointmentId = appointmentServices.Edit(id, appointmentDTO);
+                if (appointmentId == null)
+                    return NotFound();
+                return Ok(appointmentServices.GetByIdWithIncludes(appointmentId.Value));
+            }
+            catch (AppointmentNotEditableException ex)
+            {
+                return Conflict(ex.Message);
+            }
         }
     }
 }

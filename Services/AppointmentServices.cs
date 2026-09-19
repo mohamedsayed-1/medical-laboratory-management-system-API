@@ -1,6 +1,7 @@
 ﻿using System.Linq.Expressions;
 using Medical_Laboratory_Management_System.Data;
 using Medical_Laboratory_Management_System.DTOs;
+using Medical_Laboratory_Management_System.Exceptions;
 using Medical_Laboratory_Management_System.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -150,6 +151,20 @@ namespace Medical_Laboratory_Management_System.Services
                 .OrderBy(x => x.AppointmentId)
                 .ToList();
             return appointmentsDTO;
+        }
+
+        public int? Edit(int id, EditAppointmentDTO appointmentDTO)
+        {
+            var appointment = context.Appointments.Where(x => x.Id == id).FirstOrDefault();
+            if (appointment == null)
+                return null;
+            if (appointment.Status != Models.Enums.AppointmentStatus.Scheduled)
+                throw new AppointmentNotEditableException($"Appointment {id} cannot be edited because it's status is \"{appointment.Status}\"");
+            appointment.Urgent = appointmentDTO.Urgent ?? appointment.Urgent;
+            appointment.Date = appointmentDTO.Date ?? appointment.Date;
+            appointment.Notes = appointmentDTO.Notes ?? appointment.Notes;
+            context.SaveChanges();
+            return appointment.Id;
         }
     }
 }
