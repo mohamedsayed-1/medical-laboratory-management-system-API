@@ -25,5 +25,14 @@ namespace Medical_Laboratory_Management_System.Controllers
             var labTests = labTestServices.GetAll();
             return Ok(labTests);
         }
+
+        [HttpGet("{id:int}")]
+        public IActionResult GetById(int id)
+        {
+            var labTest = labTestServices.GetById(id);
+            if (labTest == null)
+                return NotFound();
+            return Ok(labTest);
+        }
     }
 }
