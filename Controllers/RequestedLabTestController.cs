@@ -51,5 +51,14 @@ namespace Medical_Laboratory_Management_System.Controllers
             }
             return BadRequest();
         }
+
+        [HttpDelete("{id:int}")]
+        public IActionResult Delete(int id)
+        {
+            var requestedLabTestId = requestedLabTestServices.Delete(id);
+            if (requestedLabTestId == null)
+                return NotFound();
+            return NoContent();
+        }
     }
 }

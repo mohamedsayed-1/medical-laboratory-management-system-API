@@ -14,6 +14,18 @@ namespace Medical_Laboratory_Management_System.Services
         {
             this.context = context;
         }
+
+        public int? Delete(int id)
+        {
+            var requestedLabTest = context.RequestedLabTests
+                .Where(x => x.Id == id).FirstOrDefault();
+            if (requestedLabTest == null)
+                return null;
+            requestedLabTest.IsDeleted = true;
+            context.SaveChanges();
+            return requestedLabTest.Id;
+        }
+
         public List<RequestedLabTestDetailsDTO> GetAll(int pageNum, int pageSize)
         {
             var requestedLabTests = context.RequestedLabTests
