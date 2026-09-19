@@ -35,5 +35,14 @@ namespace Medical_Laboratory_Management_System.Controllers
                 return NotFound();
             return Ok(patient);
         }
+
+        [HttpGet("/phoneNumber/{phoneNumber}")]
+        public IActionResult GetByPhoneNumber(string phoneNumber)
+        {
+            var patient = patientServices.GetByPhoneNumber(phoneNumber);
+            if (patient == null)
+                return NotFound();
+            return Ok(patient);
+        }
     }
 }

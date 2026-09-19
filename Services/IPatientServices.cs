@@ -8,5 +8,6 @@ namespace Medical_Laboratory_Management_System.Services
         public Patient? FindByPhoneNumber(string phoneNumber);
         public List<PatientDetailsDTO> GetAll(int pageNum, int pageSize);
         public PatientDetailsDTO? GetById(int id);
+        public PatientDetailsDTO? GetByPhoneNumber(string phoneNumber);
     }
 }

@@ -39,6 +39,15 @@ namespace Medical_Laboratory_Management_System.Services
             return patient;
         }
 
+        public PatientDetailsDTO? GetByPhoneNumber(string phoneNumber)
+        {
+            var patient = context.Patients
+                .Where (x => x.PhoneNumber == phoneNumber)
+                .Select(ToPatientDetailsDTO())
+                .FirstOrDefault();
+            return patient;
+        }
+
         private Expression<Func<Patient, PatientDetailsDTO>> ToPatientDetailsDTO()
         {
             return x => new PatientDetailsDTO()
