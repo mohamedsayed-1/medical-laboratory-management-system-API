@@ -64,9 +64,9 @@ namespace Medical_Laboratory_Management_System.Services
         {
             var appointments = context.Appointments
                 .Select(ToAppointmentDetailsDTO())
+                .OrderBy(x => x.AppointmentId)
                 .Skip((pageNum - 1) * pageSize)
                 .Take(pageSize)
-                .OrderBy(x => x.AppointmentId)
                 .ToList();
             return appointments;
         }
@@ -94,9 +94,9 @@ namespace Medical_Laboratory_Management_System.Services
                 .Where(x => x.Status.ToString().ToUpper() == status.ToUpper());
             }
             var appointmentsDTO = appointments.Select(ToAppointmentDetailsDTO())
+            .OrderBy(x => x.AppointmentId)
             .Skip((pageNum - 1) * pageSize)
             .Take(pageSize)
-            .OrderBy(x => x.AppointmentId)
             .ToList();
             return appointmentsDTO;
         }
@@ -146,9 +146,9 @@ namespace Medical_Laboratory_Management_System.Services
             }
             var appointmentsDTO = appointments.Select(ToAppointmentDetailsDTO())
                 .Where(x => x.PatientPhoneNumber == phoneNumber)
+                .OrderBy(x => x.AppointmentId)
                 .Skip((pageNum - 1) * pageSize)
                 .Take(pageSize)
-                .OrderBy(x => x.AppointmentId)
                 .ToList();
             return appointmentsDTO;
         }
