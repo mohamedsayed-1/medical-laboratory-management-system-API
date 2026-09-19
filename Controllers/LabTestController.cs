@@ -38,7 +38,7 @@ namespace Medical_Laboratory_Management_System.Controllers
         }
 
         [HttpPost]
-        public IActionResult Add(LabTestDetailsDTO labTestDTO)
+        public IActionResult Add(AddLabTestDTO labTestDTO)
         {
             var labTestId = labTestServices.Add(labTestDTO);
             return CreatedAtAction(nameof(GetById), new { id = labTestId }, labTestServices.GetById(labTestId));
