@@ -27,6 +27,18 @@ namespace Medical_Laboratory_Management_System.Services
             return newLabTest.Id;
         }
 
+        public int? Edit(int id, EditLabTestDTO labTestDTO)
+        {
+            var labTest = context.LabTests
+                .Where(x => x.Id == id).FirstOrDefault();
+            if (labTest == null)
+                return null;
+            labTest.Name = labTestDTO.Name ?? labTest.Name;
+            labTest.Price = labTestDTO.Price ?? labTest.Price;
+            context.SaveChanges();
+            return labTest.Id;
+        }
+
         public List<LabTestDetailsDTO> GetAll()
         {
             var labTests = context.LabTests

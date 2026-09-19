@@ -1,4 +1,5 @@
 ﻿using Medical_Laboratory_Management_System.DTOs;
+using Medical_Laboratory_Management_System.Exceptions;
 using Medical_Laboratory_Management_System.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -41,6 +42,15 @@ namespace Medical_Laboratory_Management_System.Controllers
         {
             var labTestId = labTestServices.Add(labTestDTO);
             return CreatedAtAction(nameof(GetById), new { id = labTestId }, labTestServices.GetById(labTestId));
+        }
+
+        [HttpPatch("{id:int}")]
+        public IActionResult Edit(int id, EditLabTestDTO labTestDTO)
+        {
+            var labTestId = labTestServices.Edit(id, labTestDTO);
+            if (labTestId == null)
+                return NotFound();
+            return Ok(labTestServices.GetById(labTestId.Value));
         }
     }
 }
