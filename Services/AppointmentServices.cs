@@ -166,5 +166,20 @@ namespace Medical_Laboratory_Management_System.Services
             context.SaveChanges();
             return appointment.Id;
         }
+
+        public int? Delete(int id)
+        {
+            var appointment = context.Appointments.IgnoreQueryFilters()
+                .Where(x => x.Id == id).FirstOrDefault();
+            if(appointment == null)
+                return null;
+            appointment.IsDeleted = true;
+            foreach (var requestedLabTest in appointment.RequestedLabTests)
+            {
+                requestedLabTest.IsDeleted = true;
+            }
+            context.SaveChanges();
+            return appointment.Id;
+        }
     }
 }

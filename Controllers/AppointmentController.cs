@@ -68,7 +68,7 @@ namespace Medical_Laboratory_Management_System.Controllers
                 pageSize = 10;
                 pageNum = 1;
             }
-            if (status == "Deleted" || Enum.TryParse<AppointmentStatus>(status, ignoreCase:true,out _))  
+            if (status == "Deleted" || Enum.TryParse<AppointmentStatus>(status, ignoreCase: true, out _))
             {
                 var appointments = appointmentServices.GetAllWithIncludesFilterByStatus(pageNum, pageSize, status);
                 return Ok(appointments);
@@ -90,6 +90,16 @@ namespace Medical_Laboratory_Management_System.Controllers
             {
                 return Conflict(ex.Message);
             }
+        }
+
+        //TODO:Admin only
+        [HttpDelete("{id:int}")]
+        public IActionResult Delete(int id)
+        {
+            var appointmentId = appointmentServices.Delete(id);
+            if (appointmentId == null)
+                return NotFound();
+            return NoContent();
         }
     }
 }
