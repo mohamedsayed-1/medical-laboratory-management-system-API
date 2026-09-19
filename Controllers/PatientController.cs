@@ -1,5 +1,4 @@
-﻿using System.Drawing.Printing;
-using Medical_Laboratory_Management_System.DTOs;
+﻿using Medical_Laboratory_Management_System.DTOs;
 using Medical_Laboratory_Management_System.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -37,7 +36,7 @@ namespace Medical_Laboratory_Management_System.Controllers
             return Ok(patient);
         }
 
-        [HttpGet("/phoneNumber/{phoneNumber}")]
+        [HttpGet("phoneNumber/{phoneNumber}")]
         public IActionResult GetByPhoneNumber(string phoneNumber)
         {
             var patient = patientServices.GetByPhoneNumber(phoneNumber);
