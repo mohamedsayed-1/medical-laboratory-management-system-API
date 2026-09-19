@@ -65,6 +65,7 @@ namespace Medical_Laboratory_Management_System.Services
                 .Select(ToAppointmentDetailsDTO())
                 .Skip((pageNum - 1) * pageSize)
                 .Take(pageSize)
+                .OrderBy(x => x.AppointmentId)
                 .ToList();
             return appointments;
         }
@@ -74,9 +75,11 @@ namespace Medical_Laboratory_Management_System.Services
             context.SaveChanges();
         }
 
-        public List<AppointmentDetailsDTO> GetAllWithIncludesFilterByStatus(int pageNum, int pageSize, string status)
+        public List<AppointmentDetailsDTO>? GetAllWithIncludesFilterByStatus(int pageNum, int pageSize, string status)
         {
             IQueryable<Appointment> appointments;
+            if (status == null)
+                return null;
 
             if (status.Equals("deleted", StringComparison.OrdinalIgnoreCase))
             {
@@ -92,6 +95,7 @@ namespace Medical_Laboratory_Management_System.Services
             var appointmentsDTO = appointments.Select(ToAppointmentDetailsDTO())
             .Skip((pageNum - 1) * pageSize)
             .Take(pageSize)
+            .OrderBy(x => x.AppointmentId)
             .ToList();
             return appointmentsDTO;
         }
@@ -120,6 +124,32 @@ namespace Medical_Laboratory_Management_System.Services
                     LabTestPrice = y.LabTest.Price
                 }).ToList()
             };
+        }
+
+        public List<AppointmentDetailsDTO>? GetAllByPhoneNumberWithIncludes(int pageNum, int pageSize, string? status, string phoneNumber)
+        {
+            IQueryable<Appointment> appointments;
+            if (status == null)
+                return null;
+
+            if (status.Equals("deleted", StringComparison.OrdinalIgnoreCase))
+            {
+                appointments = context.Appointments
+                .IgnoreQueryFilters()
+                .Where(x => x.IsDeleted);
+            }
+            else
+            {
+                appointments = context.Appointments
+                .Where(x => x.Status.ToString().ToUpper() == status.ToUpper());
+            }
+            var appointmentsDTO = appointments.Select(ToAppointmentDetailsDTO())
+                .Where(x => x.PatientPhoneNumber == phoneNumber)
+                .Skip((pageNum - 1) * pageSize)
+                .Take(pageSize)
+                .OrderBy(x => x.AppointmentId)
+                .ToList();
+            return appointmentsDTO;
         }
     }
 }

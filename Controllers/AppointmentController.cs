@@ -45,6 +45,21 @@ namespace Medical_Laboratory_Management_System.Controllers
             var appointments = appointmentServices.GetAllWithIncludes(pageNum, pageSize);
             return Ok(appointments);
         }
+        [HttpGet("phoneNumber/{phoneNumber}")]
+        public IActionResult GetAllByPhoneNumber(int pageNum, int pageSize, string? status, string phoneNumber)
+        {
+            if (pageSize <= 0 || pageNum <= 0)
+            {
+                pageSize = 10;
+                pageNum = 1;
+            }
+            if (status == "Deleted" || Enum.TryParse<AppointmentStatus>(status, ignoreCase: true, out _))
+            {
+                var appointments = appointmentServices.GetAllByPhoneNumberWithIncludes(pageNum, pageSize, status, phoneNumber);
+                return Ok(appointments);
+            }
+            return BadRequest();
+        }
         [HttpGet("status")]
         public IActionResult GetAllByStatus(int pageNum, int pageSize, string status)
         {
