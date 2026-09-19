@@ -29,6 +29,16 @@ namespace Medical_Laboratory_Management_System.Services
             return patients;
 
         }
+
+        public PatientDetailsDTO? GetById(int id)
+        {
+            var patient = context.Patients
+                .Where(x => x.Id == id)
+                .Select(ToPatientDetailsDTO())
+                .FirstOrDefault();
+            return patient;
+        }
+
         private Expression<Func<Patient, PatientDetailsDTO>> ToPatientDetailsDTO()
         {
             return x => new PatientDetailsDTO()

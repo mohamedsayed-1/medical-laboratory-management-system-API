@@ -1,4 +1,5 @@
-﻿using Medical_Laboratory_Management_System.Services;
+﻿using System.Drawing.Printing;
+using Medical_Laboratory_Management_System.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Medical_Laboratory_Management_System.Controllers
@@ -24,6 +25,15 @@ namespace Medical_Laboratory_Management_System.Controllers
             }
             var patients = patientServices.GetAll(pageNum, pageSize);
             return Ok(patients);
+        }
+
+        [HttpGet("{id:int}")]
+        public IActionResult GetById(int id)
+        {
+            var patient = patientServices.GetById(id);
+            if(patient == null)
+                return NotFound();
+            return Ok(patient);
         }
     }
 }
