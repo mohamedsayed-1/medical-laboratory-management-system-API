@@ -18,6 +18,46 @@ namespace Medical_Laboratory_Management_System.Services
             this.context = context;
         }
 
+        public int? AddResult(int id, AddResultDTO addResultDTO)
+        {
+            var requestedLabTest = context.RequestedLabTests
+                .Where(x => x.Id == id)
+                .Include(x => x.Appointment) // check id not needed
+                    .ThenInclude(x => x.RequestedLabTests)
+                .FirstOrDefault();
+
+            if (requestedLabTest == null)
+                return null;
+
+            if (requestedLabTest.Status != RequestedLabTestStatus.Processing)
+                throw new ResultAddedToNonProcessingRequestedLabTest
+                    ($"Cannot add result to requested lab test {requestedLabTest.Id} because its status is \"{requestedLabTest.Status}\"");
+            var result = new LabTestResult()
+            {
+                Value = addResultDTO.Value,
+                Notes = addResultDTO.Notes,
+                RequestedLabTest = requestedLabTest
+            };
+
+            requestedLabTest.CompleteWithResult(result);
+            bool done = true;
+            foreach(var reqLabTest in requestedLabTest.Appointment.RequestedLabTests)
+            {
+                if (reqLabTest.Status == RequestedLabTestStatus.Queued
+                    || reqLabTest.Status == RequestedLabTestStatus.Processing)
+                {
+                    done = false;
+                    break;
+                }
+            }
+            if (done)
+            {
+                requestedLabTest.Appointment.Complete();
+            }
+            context.SaveChanges();
+            return requestedLabTest.Id;
+        }
+
         public int? Cancel(int id)
         {
             var requestedLabTest = context.RequestedLabTests

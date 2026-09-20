@@ -10,5 +10,6 @@ namespace Medical_Laboratory_Management_System.Services
         public int? Delete(int id);
         public int? Cancel(int id);
         public int? StartProcessing(int id);
+        public int? AddResult(int id, AddResultDTO addResultDTO);
     }
 }

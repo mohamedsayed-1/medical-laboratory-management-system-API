@@ -88,7 +88,23 @@ namespace Medical_Laboratory_Management_System.Controllers
                     return NotFound();
                 return Ok(requestedLabTestServices.GetById(requestedLabTestId.Value));
             }
-            catch(RequestedLabTestNotProcessableException ex)
+            catch (RequestedLabTestNotProcessableException ex)
+            {
+                return Conflict(ex.Message);
+            }
+        }
+
+        [HttpPost("addResult/{id}")]
+        public IActionResult AddResult(int id, AddResultDTO addResultDTO)
+        {
+            try
+            {
+                var requestedLabTestId = requestedLabTestServices.AddResult(id, addResultDTO);
+                if (requestedLabTestId == null)
+                    return NotFound();
+                return Ok(requestedLabTestServices.GetById(requestedLabTestId.Value));
+            }
+            catch (ResultAddedToNonProcessingRequestedLabTest ex)
             {
                 return Conflict(ex.Message);
             }
