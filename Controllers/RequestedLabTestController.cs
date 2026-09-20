@@ -1,5 +1,5 @@
 ﻿using Medical_Laboratory_Management_System.Exceptions;
-using Medical_Laboratory_Management_System.Models;
+using Medical_Laboratory_Management_System.DTOs;
 using Medical_Laboratory_Management_System.Models.Enums;
 using Medical_Laboratory_Management_System.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -73,6 +73,22 @@ namespace Medical_Laboratory_Management_System.Controllers
                 return Ok(requestedLabTestServices.GetById(requestedLabTestId.Value));
             }
             catch (RequestedLabTestNotCancellableException ex)
+            {
+                return Conflict(ex.Message);
+            }
+        }
+
+        [HttpPost("process")]
+        public IActionResult StartProcessing(int id)
+        {
+            try
+            {
+                var requestedLabTestId = requestedLabTestServices.StartProcessing(id);
+                if (requestedLabTestId == null)
+                    return NotFound();
+                return Ok(requestedLabTestServices.GetById(requestedLabTestId.Value));
+            }
+            catch(RequestedLabTestNotProcessableException ex)
             {
                 return Conflict(ex.Message);
             }

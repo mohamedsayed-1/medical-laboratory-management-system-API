@@ -1,8 +1,10 @@
-﻿using System.Linq.Expressions;
+﻿using System.Drawing.Printing;
+using System.Linq.Expressions;
 using Medical_Laboratory_Management_System.Data;
 using Medical_Laboratory_Management_System.DTOs;
 using Medical_Laboratory_Management_System.Exceptions;
 using Medical_Laboratory_Management_System.Models;
+using Medical_Laboratory_Management_System.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace Medical_Laboratory_Management_System.Services
@@ -84,6 +86,24 @@ namespace Medical_Laboratory_Management_System.Services
                 .Where(x => x.Id == id)
                 .Select(ToRequestedLabTestsDetailsDTO())
                 .FirstOrDefault();
+        }
+
+        public int? StartProcessing(int id)
+        {
+            var requestedLabTest = context.RequestedLabTests
+                .Where(x => x.Id == id)
+                .Include(x => x.Appointment)
+                .FirstOrDefault();
+            if (requestedLabTest == null)
+                return null;
+            if (requestedLabTest.Status != RequestedLabTestStatus.Queued)
+                throw new RequestedLabTestNotProcessableException
+                    ($"Requested Lab Test {id} cannot be Processed because it's status is \"{requestedLabTest.Status}\"");
+            requestedLabTest.Process();
+            if (requestedLabTest.Appointment.Status == AppointmentStatus.Scheduled)
+                requestedLabTest.Appointment.Process();
+            context.SaveChanges();
+            return requestedLabTest.Id;
         }
 
         private Expression<Func<RequestedLabTest, RequestedLabTestDetailsDTO>> ToRequestedLabTestsDetailsDTO()
