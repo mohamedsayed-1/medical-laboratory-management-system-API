@@ -1,11 +1,12 @@
 ﻿using Medical_Laboratory_Management_System.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Medical_Laboratory_Management_System.Data
 {
-    public class MLMSDbContext : DbContext
+    public class MLMSDbContext : IdentityDbContext<ApplicationUser>
     {
-        public MLMSDbContext(DbContextOptions options) : base(options){}
+        public MLMSDbContext(DbContextOptions<MLMSDbContext> options) : base(options){}
             
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<Patient> Patients { get; set; }
