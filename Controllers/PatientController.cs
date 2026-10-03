@@ -1,9 +1,12 @@
-﻿using Medical_Laboratory_Management_System.DTOs;
+﻿using Medical_Laboratory_Management_System.Constants;
+using Medical_Laboratory_Management_System.DTOs;
 using Medical_Laboratory_Management_System.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Medical_Laboratory_Management_System.Controllers
 {
+    [Authorize(Roles = $"{Roles.Admin},{Roles.Receptionist},{Roles.Technician}")]
     [Route("api/[controller]")]
     [ApiController]
     public class PatientController : ControllerBase
@@ -45,7 +48,7 @@ namespace Medical_Laboratory_Management_System.Controllers
             return Ok(patient);
         }
 
-        [HttpPost("{id}")]
+        [HttpPatch("{id}")]
         public IActionResult Edit(int id, EditPatientDTO patientDTO)
         {
             var patientId = patientServices.Edit(id, patientDTO);

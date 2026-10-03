@@ -4,6 +4,7 @@ using System.Text;
 using Medical_Laboratory_Management_System.Constants;
 using Medical_Laboratory_Management_System.DTOs;
 using Medical_Laboratory_Management_System.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -27,6 +28,7 @@ namespace Medical_Laboratory_Management_System.Controllers
             this.config = config;
         }
 
+        [Authorize(Roles = Roles.Admin)]
         [HttpPost("Register")]
         public async Task<IActionResult> Register(RegisterDTO registerDTO)
         {
@@ -47,6 +49,7 @@ namespace Medical_Laboratory_Management_System.Controllers
                 var roleResult = await userManager.AddToRoleAsync(newAcc, registerDTO.Role);
                 if (!roleResult.Succeeded)
                 {
+                    await userManager.DeleteAsync(newAcc);
                     return BadRequest();
                 }
                 await userManager.AddClaimAsync(newAcc, new Claim(ClaimTypes.NameIdentifier, newAcc.Id));
@@ -60,7 +63,7 @@ namespace Medical_Laboratory_Management_System.Controllers
             return BadRequest(ModelState);
         }
 
-
+        [AllowAnonymous]
         [HttpPost("Login")]
         public async Task<IActionResult> Login(LoginDTO loginDTO)
         {

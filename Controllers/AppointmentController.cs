@@ -1,7 +1,9 @@
-﻿using Medical_Laboratory_Management_System.DTOs;
+﻿using Medical_Laboratory_Management_System.Constants;
+using Medical_Laboratory_Management_System.DTOs;
 using Medical_Laboratory_Management_System.Exceptions;
 using Medical_Laboratory_Management_System.Models.Enums;
 using Medical_Laboratory_Management_System.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Medical_Laboratory_Management_System.Controllers
@@ -16,6 +18,8 @@ namespace Medical_Laboratory_Management_System.Controllers
         {
             this.appointmentServices = appointmentServices;
         }
+
+        [Authorize(Roles = $"{Roles.Admin},{Roles.Receptionist},{Roles.Technician}")]
         [HttpPost]
         public IActionResult Add(AddAppointmentDTO appointmentDTO)
         {
@@ -25,6 +29,7 @@ namespace Medical_Laboratory_Management_System.Controllers
             return CreatedAtAction(nameof(GetById), new { id = appointment.Id }, appointmentServices.GetByIdWithIncludes(appointment.Id));
         }
 
+        [Authorize(Roles = $"{Roles.Admin},{Roles.Receptionist},{Roles.Technician}")]
         [HttpGet("{id:int}")]
         public IActionResult GetById(int id)
         {
@@ -34,6 +39,7 @@ namespace Medical_Laboratory_Management_System.Controllers
             return Ok(appointment);
         }
 
+        [Authorize(Roles = $"{Roles.Admin},{Roles.Receptionist},{Roles.Technician}")]
         [HttpGet]
         public IActionResult GetAll(int pageNum, int pageSize)
         {
@@ -45,6 +51,8 @@ namespace Medical_Laboratory_Management_System.Controllers
             var appointments = appointmentServices.GetAllWithIncludes(pageNum, pageSize);
             return Ok(appointments);
         }
+        
+        [Authorize(Roles = $"{Roles.Admin},{Roles.Receptionist},{Roles.Technician}")]
         [HttpGet("phoneNumber/{phoneNumber}")]
         public IActionResult GetAllByPhoneNumber(int pageNum, int pageSize, string? status, string phoneNumber)
         {
@@ -53,13 +61,22 @@ namespace Medical_Laboratory_Management_System.Controllers
                 pageSize = 10;
                 pageNum = 1;
             }
-            if (status == "Deleted" || Enum.TryParse<AppointmentStatus>(status, ignoreCase: true, out _))
+            if (status?.ToLower() == "deleted")
+            {
+                if (!User.IsInRole(Roles.Admin))
+                {
+                    return Forbid();
+                }
+            }
+            if (status?.ToLower() == "deleted" || Enum.TryParse<AppointmentStatus>(status, ignoreCase: true, out _))
             {
                 var appointments = appointmentServices.GetAllByPhoneNumberWithIncludes(pageNum, pageSize, status, phoneNumber);
                 return Ok(appointments);
             }
             return BadRequest();
         }
+        
+        [Authorize(Roles = $"{Roles.Admin},{Roles.Receptionist},{Roles.Technician}")]
         [HttpGet("status")]
         public IActionResult GetAllByStatus(int pageNum, int pageSize, string status)
         {
@@ -68,7 +85,14 @@ namespace Medical_Laboratory_Management_System.Controllers
                 pageSize = 10;
                 pageNum = 1;
             }
-            if (status == "Deleted" || Enum.TryParse<AppointmentStatus>(status, ignoreCase: true, out _))
+            if(status.ToLower() == "deleted")
+            {
+                if(!User.IsInRole(Roles.Admin))
+                {
+                    return Forbid();
+                }
+            }
+            if (status.ToLower() == "deleted" || Enum.TryParse<AppointmentStatus>(status, ignoreCase: true, out _))
             {
                 var appointments = appointmentServices.GetAllWithIncludesFilterByStatus(pageNum, pageSize, status);
                 return Ok(appointments);
@@ -76,6 +100,7 @@ namespace Medical_Laboratory_Management_System.Controllers
             return BadRequest();
         }
 
+        [Authorize(Roles = $"{Roles.Admin},{Roles.Receptionist},{Roles.Technician}")]
         [HttpPatch("{id:int}")]
         public IActionResult Edit(int id, EditAppointmentDTO appointmentDTO)
         {
@@ -92,7 +117,7 @@ namespace Medical_Laboratory_Management_System.Controllers
             }
         }
 
-        //TODO:Admin only
+        [Authorize(Roles = Roles.Admin)]
         [HttpDelete("{id:int}")]
         public IActionResult Delete(int id)
         {
@@ -102,6 +127,7 @@ namespace Medical_Laboratory_Management_System.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = $"{Roles.Admin},{Roles.Receptionist},{Roles.Technician}")]
         [HttpPost("{id:int}/cancel")]
         public IActionResult Cancel(int id)
         {

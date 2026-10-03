@@ -1,6 +1,7 @@
-﻿using Medical_Laboratory_Management_System.DTOs;
-using Medical_Laboratory_Management_System.Exceptions;
+﻿using Medical_Laboratory_Management_System.Constants;
+using Medical_Laboratory_Management_System.DTOs;
 using Medical_Laboratory_Management_System.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Medical_Laboratory_Management_System.Controllers
@@ -16,6 +17,7 @@ namespace Medical_Laboratory_Management_System.Controllers
             this.labTestServices = labTestServices;
         }
 
+        [Authorize(Roles = $"{Roles.Admin},{Roles.Receptionist},{Roles.Technician}")]
         [HttpGet]
         public IActionResult GetAll(int pageNum, int pageSize)
         {
@@ -28,6 +30,7 @@ namespace Medical_Laboratory_Management_System.Controllers
             return Ok(labTests);
         }
 
+        [Authorize(Roles = $"{Roles.Admin},{Roles.Receptionist},{Roles.Technician}")]
         [HttpGet("{id:int}")]
         public IActionResult GetById(int id)
         {
@@ -37,6 +40,7 @@ namespace Medical_Laboratory_Management_System.Controllers
             return Ok(labTest);
         }
 
+        [Authorize(Roles = Roles.Admin)]
         [HttpPost]
         public IActionResult Add(AddLabTestDTO labTestDTO)
         {
@@ -44,6 +48,7 @@ namespace Medical_Laboratory_Management_System.Controllers
             return CreatedAtAction(nameof(GetById), new { id = labTestId }, labTestServices.GetById(labTestId));
         }
 
+        [Authorize(Roles = Roles.Admin)]
         [HttpPatch("{id:int}")]
         public IActionResult Edit(int id, EditLabTestDTO labTestDTO)
         {
@@ -53,6 +58,7 @@ namespace Medical_Laboratory_Management_System.Controllers
             return Ok(labTestServices.GetById(labTestId.Value));
         }
 
+        [Authorize(Roles = Roles.Admin)]
         [HttpDelete("{id:int}")]
         public IActionResult Delete(int id)
         {

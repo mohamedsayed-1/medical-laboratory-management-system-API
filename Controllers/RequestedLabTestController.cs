@@ -1,7 +1,9 @@
-﻿using Medical_Laboratory_Management_System.Exceptions;
+﻿using Medical_Laboratory_Management_System.Constants;
 using Medical_Laboratory_Management_System.DTOs;
+using Medical_Laboratory_Management_System.Exceptions;
 using Medical_Laboratory_Management_System.Models.Enums;
 using Medical_Laboratory_Management_System.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Medical_Laboratory_Management_System.Controllers
@@ -16,6 +18,8 @@ namespace Medical_Laboratory_Management_System.Controllers
         {
             this.requestedLabTestServices = requestedLabTestServices;
         }
+
+        [Authorize(Roles = $"{Roles.Admin},{Roles.Technician}")]
         [HttpGet]
         public IActionResult GetAll(int pageNum, int pageSize)
         {
@@ -28,6 +32,7 @@ namespace Medical_Laboratory_Management_System.Controllers
             return Ok(requestedLabTest);
         }
 
+        [Authorize(Roles = $"{Roles.Admin},{Roles.Technician}")]
         [HttpGet("{id:int}")]
         public IActionResult GetById(int id)
         {
@@ -37,6 +42,7 @@ namespace Medical_Laboratory_Management_System.Controllers
             return Ok(requestedLabTest);
         }
 
+        [Authorize(Roles = $"{Roles.Admin},{Roles.Technician}")]
         [HttpGet("status")]
         public IActionResult GetAllByStatus(int pageNum, int pageSize, string status)
         {
@@ -44,6 +50,13 @@ namespace Medical_Laboratory_Management_System.Controllers
             {
                 pageSize = 10;
                 pageNum = 1;
+            }
+            if (status.ToLower() == "deleted")
+            {
+                if (!User.IsInRole(Roles.Admin))
+                {
+                    return Forbid();
+                }
             }
             if (status.ToLower() == "deleted" || Enum.TryParse<RequestedLabTestStatus>(status, ignoreCase: true, out _))
             {
@@ -53,6 +66,7 @@ namespace Medical_Laboratory_Management_System.Controllers
             return BadRequest();
         }
 
+        [Authorize(Roles = Roles.Admin)]
         [HttpDelete("{id:int}")]
         public IActionResult Delete(int id)
         {
@@ -62,6 +76,7 @@ namespace Medical_Laboratory_Management_System.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = $"{Roles.Admin},{Roles.Technician}")]
         [HttpPost("{id:int}/cancel")]
         public IActionResult Cancel(int id)
         {
@@ -78,6 +93,7 @@ namespace Medical_Laboratory_Management_System.Controllers
             }
         }
 
+        [Authorize(Roles = $"{Roles.Admin},{Roles.Technician}")]
         [HttpPost("process")]
         public IActionResult StartProcessing(int id)
         {
@@ -94,6 +110,7 @@ namespace Medical_Laboratory_Management_System.Controllers
             }
         }
 
+        [Authorize(Roles = $"{Roles.Admin},{Roles.Technician}")]
         [HttpPost("addResult/{id}")]
         public IActionResult AddResult(int id, AddResultDTO addResultDTO)
         {
