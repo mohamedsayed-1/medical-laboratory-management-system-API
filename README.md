@@ -1,8 +1,12 @@
 # Medical Laboratory Management System API
 
-A RESTful API for managing patients, doctors' referrals, appointments, requested lab tests, and lab results at a medical laboratory. This is the second iteration of the MLMS domain — the first was built as an ASP.NET Core MVC application; this version was deliberately redesigned around API-first concerns (REST conventions, DTOs, JWT authentication, role-based authorization) rather than translated line-by-line from the MVC controllers.
+A RESTful API for managing patients, doctors' referrals, appointments, requested lab tests, and lab results at a medical laboratory.
 
-This project is the API-based second iteration of my Medical Laboratory Management System. The first iteration was built with ASP.NET Core MVC; this version was redesigned around REST API principles, DTOs, JWT authentication, role-based authorization, and API-focused business rules.
+This project is the API-based second iteration of my [Medical Laboratory Management System](https://github.com/mohamedsayed-1/medical-laboratory-management-system). The first iteration was built with ASP.NET Core MVC; this version was redesigned around REST API principles, DTOs, JWT authentication, role-based authorization, and API-focused business rules.
+
+## API Overview
+
+![Swagger UI](docs/screenshots/swagger.png)
 
 ## Features
 
@@ -66,15 +70,7 @@ Example development configuration:
    ```
    dotnet run
    ```
-
-On the first run, the application automatically seeds the three roles:
-
-- Admin
-- Receptionist
-- Technician
-
-It also creates the initial administrator account using the configured seed credentials.
-
+   On the first run, the application automatically seeds the three roles (Admin, Receptionist, Technician) and creates the initial administrator account using the configured seed credentials.
 6. Log in via `POST /api/account/login` with the seeded admin credentials to get a JWT, then use Swagger's "Authorize" button to attach it to subsequent requests.
 
 ## Project Status
